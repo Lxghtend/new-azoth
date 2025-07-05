@@ -1,0 +1,2 @@
+Kembaalung Village:Hollow Mountain|Dungeon|
+Location Name:Alternate Dungeon Name (some dont have)|Dungeon/Location|x1,y1,z1:x2,y2,z2 (this can be empty if you want it to just check at the enterance)
