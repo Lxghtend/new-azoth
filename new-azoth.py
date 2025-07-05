@@ -253,7 +253,7 @@ async def azothCollect(client: Client, wizard, reagent):
 async def logout_and_in(client: Client, nextWizard, needSwitch, title):
         #fail check is used multiple times as it is what i have called the variable that ends the button pressing loops
         print(f'[{title}] Logging out and in...')
-        while not is_visible_by_path(client.root_window, quitButton):
+        while not await is_visible_by_path(client.root_window, quitButton):
             await client.send_key(Keycode.ESC, 0.3)
             await asyncio.sleep(0.1)
 
