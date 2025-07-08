@@ -611,6 +611,10 @@ async def runmanager(listPosition):
             await asyncio.sleep(6)
             pass
 
+        while await is_visible_by_path(client.root_window, playButton): #fails to kill hooks on classroom screen and bricks the bot
+            await click_window_from_path(client.mouse_handler, client.root_window, playButton)
+            await asyncio.sleep(0.1)
+
         await client.close()
 
         try:
