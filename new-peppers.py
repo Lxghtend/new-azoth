@@ -246,12 +246,13 @@ async def pepperCollect(client: Client, wizard, reagent, listPos):
                 break
             await petPower(client)
             await asyncio.sleep(0.1)
-        for 'Hatch Pepper' in drops:
-            activeClients[listPos].totalPeppersCollected += 1
-            wizard.Peppers += 1
-        for '2 Hatch Pepper' in drops:
-            activeClients[listPos].totalPeppersCollected += 2
-            wizard.Peppers += 2
+        for item in drops:
+            if item == 'Hatch Pepper':
+                activeClients[listPos].totalPeppersCollected += 1
+                wizard.Peppers += 1
+            if item == '2 Hatch Pepper':
+                activeClients[listPos].totalPeppersCollected += 2
+                wizard.Peppers += 2
 
 async def logout_and_in(client: Client, nextWizard, needSwitch, title):
         #fail check is used multiple times as it is what i have called the variable that ends the button pressing loops
