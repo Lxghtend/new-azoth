@@ -246,10 +246,10 @@ async def pepperCollect(client: Client, wizard, reagent, listPos):
                 break
             await petPower(client)
             await asyncio.sleep(0.1)
-        if 'Hatch Pepper' in drops:
+        for 'Hatch Pepper' in drops:
             activeClients[listPos].totalPeppersCollected += 1
             wizard.Peppers += 1
-        if '2 Hatch Pepper' in drops:
+        for '2 Hatch Pepper' in drops:
             activeClients[listPos].totalPeppersCollected += 2
             wizard.Peppers += 2
 
