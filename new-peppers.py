@@ -241,11 +241,14 @@ async def pepperCollect(client: Client, wizard, reagent, listPos):
         while (await petPowerVisibility(client)):
             await petPower(client, 0.1)
         while True: # i hate this code but it works ig
-            drops = await drop_logger.get_drops()
-            if any(reagent in drop for drop in drops): #checks for partial match
-                break
-            await petPower(client)
-            await asyncio.sleep(0.1)
+            try:
+                drops = await drop_logger.get_drops()
+                if any(reagent in drop for drop in drops): #checks for partial match
+                    break
+                await petPower(client)
+                await asyncio.sleep(0.1)
+            except TypeError:
+                return
         for item in drops:
             if item == 'Hatch Pepper':
                 activeClients[listPos].totalPeppersCollected += 1
@@ -592,12 +595,21 @@ async def runmanager(listPosition):
         finally:
             await asyncio.sleep(6)
             pass
-        
-        while await is_visible_by_path(client.root_window, playButton): #fails to kill hooks on classroom screen and bricks the bot
-            await click_window_from_path(client.mouse_handler, client.root_window, playButton)
-            await asyncio.sleep(0.1)
+            
+        try:
+            while await is_visible_by_path(client.root_window, playButton): #fails to kill hooks on classroom screen and bricks the bot
+                await click_window_from_path(client.mouse_handler, client.root_window, playButton)
+                await asyncio.sleep(0.1)
+        except: # i forgot to look at the error (root window is not active)
+            pass
 
-        await client.close()
+        try:
+            await asyncio.sleep(5)
+
+            await client.close()
+
+        except:
+            pass
 
         try:
             subprocess.call(f"taskkill /F /PID {client.process_id}",stdout=subprocess.DEVNULL) #kills the current wizard client
