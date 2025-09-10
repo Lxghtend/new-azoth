@@ -148,34 +148,34 @@ async def petPower(client: Client, delay=float(2)): #clicks the power button
     await click_window_from_path(client.mouse_handler, client.root_window, petPowerButton)
 
 async def refillHappiness(client: Client) -> bool:
-        while not await is_visible_by_path(client.root_window, feedPet):
-            await click_window_from_path(client.mouse_handler, client.root_window, petSystem)
-          
-        while not await is_visible_by_path(client.root_window, closeFeedPetWindow):
-            await client.mouse_handler.click_window_with_name('FeedPetButton')
+    while not await is_visible_by_path(client.root_window, feedPet):
+        await click_window_from_path(client.mouse_handler, client.root_window, petSystem)
+        
+    while not await is_visible_by_path(client.root_window, closeFeedPetWindow):
+        await client.mouse_handler.click_window_with_name('FeedPetButton')
 
-        happiness = removeTags(await (await window_from_path(client.root_window, happinessText)).maybe_text())    
+    happiness = removeTags(await (await window_from_path(client.root_window, happinessText)).maybe_text())    
 
-        while eval(happiness) != 1:
-            await click_window_from_path(client.mouse_handler, client.root_window, snackCard0)
+    while eval(happiness) != 1:
+        await click_window_from_path(client.mouse_handler, client.root_window, snackCard0)
 
-            await click_window_from_path(client.mouse_handler, client.root_window, feedStack)
-            happiness = removeTags(await (await window_from_path(client.root_window, happinessText)).maybe_text())
-            
-            if not await snackVisibility(client):
-                await click_window_until_gone(client, closeFeedPetWindow)
+        await click_window_from_path(client.mouse_handler, client.root_window, feedStack)
+        happiness = removeTags(await (await window_from_path(client.root_window, happinessText)).maybe_text())
+        
+        if not await snackVisibility(client):
+            await click_window_until_gone(client, closeFeedPetWindow)
 
-                while await is_visible_by_path(client.root_window, feedPet):
-                    await click_window_from_path(client.mouse_handler, client.root_window, petSystem)
-                    
-                return False
-            
-        await click_window_until_gone(client, closeFeedPetWindow)
+            while await is_visible_by_path(client.root_window, feedPet):
+                await click_window_from_path(client.mouse_handler, client.root_window, petSystem)
+                
+            return False
+        
+    await click_window_until_gone(client, closeFeedPetWindow)
 
-        while await is_visible_by_path(client.root_window, feedPet):
-            await click_window_from_path(client.mouse_handler, client.root_window, petSystem)
+    while await is_visible_by_path(client.root_window, feedPet):
+        await click_window_from_path(client.mouse_handler, client.root_window, petSystem)
 
-        return True
+    return True
 
 async def crownshopVisibilty(client: Client) -> bool: #returns if crownshop is visible
     try: 
@@ -237,54 +237,53 @@ async def skipDialogue(client: Client): #skips dialogue boxes if any opened
             await asyncio.sleep(1)
 
 async def pepperCollect(client: Client, wizard, reagent, listPos):
-        drop_logger = DropLogger(client)
-        while (await petPowerVisibility(client)):
-            await petPower(client, 0.1)
-        while True: # i hate this code but it works ig
-            try:
-                drops = await drop_logger.get_drops()
-                if any(reagent in drop for drop in drops): #checks for partial match
-                    break
-                await petPower(client)
-                await asyncio.sleep(0.1)
-            except TypeError:
-                return
-        for item in drops:
-            if item == 'Hatch Pepper':
-                activeClients[listPos].totalPeppersCollected += 1
-                wizard.Peppers += 1
-            if item == '2 Hatch Pepper':
-                activeClients[listPos].totalPeppersCollected += 2
-                wizard.Peppers += 2
+    drop_logger = DropLogger(client)
+    while (await petPowerVisibility(client)):
+        await petPower(client, 0.1)
+    while True: # i hate this code but it works ig
+        try:
+            drops = await drop_logger.get_drops()
+            if any(reagent in drop for drop in drops): #checks for partial match
+                break
+            await petPower(client)
+            await asyncio.sleep(0.1)
+        except TypeError:
+            return
+    for item in drops:
+        if item == 'Hatch Pepper':
+            activeClients[listPos].totalPeppersCollected += 1
+            wizard.Peppers += 1
+        if item == '2 Hatch Pepper':
+            activeClients[listPos].totalPeppersCollected += 2
+            wizard.Peppers += 2
 
 async def logout_and_in(client: Client, nextWizard, needSwitch, title):
-        #fail check is used multiple times as it is what i have called the variable that ends the button pressing loops
-        print(f'[{title}] Logging out and in...')
-        while not await is_visible_by_path(client.root_window, quitButton):
-            await client.send_key(Keycode.ESC, 0.3)
-            await asyncio.sleep(0.1)
+    #fail check is used multiple times as it is what i have called the variable that ends the button pressing loops
+    print(f'[{title}] Logging out and in...')
+    while not await is_visible_by_path(client.root_window, quitButton):
+        await client.send_key(Keycode.ESC, 0.3)
+        await asyncio.sleep(0.1)
 
-        #basic idea here is it will keep pressing the button until it detects something that means it can move onto the next part in logging out
-        await click_window_until_gone(client, quitButton)
-        
-        while not (needConfirm := await is_visible_by_path(client.root_window, logOutConfirm)):
-            await asyncio.sleep(0.1)
-            if await is_visible_by_path(client.root_window, playButton):
-                break
-        
-        if needConfirm: 
-            await click_window_until_gone(client, logOutConfirm)        
-  
-        while not(await is_visible_by_path(client.root_window, playButton)): 
-            await asyncio.sleep(0.1)        
-                
-        if needSwitch: 
-            print(f'[{title}] Switching Wizard To: {nextWizard}' )
-        
-        start_time = asyncio.get_event_loop().time()    
-        
-        switch = True        
-        while switch and needSwitch: 
+    #basic idea here is it will keep pressing the button until it detects something that means it can move onto the next part in logging out
+    await click_window_until_gone(client, quitButton)
+    
+    while not (needConfirm := await is_visible_by_path(client.root_window, logOutConfirm)):
+        await asyncio.sleep(0.1)
+        if await is_visible_by_path(client.root_window, playButton):
+            break
+    
+    if needConfirm: 
+        await click_window_until_gone(client, logOutConfirm)        
+
+    while not(await is_visible_by_path(client.root_window, playButton)): 
+        await asyncio.sleep(0.1)        
+            
+    if needSwitch: 
+        print(f'[{title}] Switching Wizard To: {nextWizard}' )
+    
+    switch = True        
+    while switch and needSwitch: 
+        for i in range(6):
             await client.send_key(Keycode.TAB, 0.05)
             try:        
                 wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
@@ -292,34 +291,26 @@ async def logout_and_in(client: Client, nextWizard, needSwitch, title):
                             await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
             except:
                 pass
-                
-            current_time = asyncio.get_event_loop().time()
-            
-            if await is_visible_by_path(client.root_window, rightClassRoomButton):
-                if wizard != nextWizard:
-                    await click_window_until_gone(client, rightClassRoomButton)
 
-            if current_time - start_time > 4:
-                await asyncio.sleep(0.3)
-                await click_window_until_gone(client, leftClassRoomButton)
-                break
-            
             if wizard == nextWizard:
                 switch = False
-                
-            if wizard == nextWizard:
-                await asyncio.sleep(0.5)
-                await click_window_until_gone(client, playButton)
-        
-        while await is_visible_by_path(client.root_window, playButton):
-            await click_window_from_path(client.mouse_handler, client.root_window, playButton)
+                break
+
+        if needSwitch and switch:
+            await click_window_from_path(client.mouse_handler, client.root_window, leftClassRoomButton)
             await asyncio.sleep(0.1)
 
-        while await client.is_loading():
-            await asyncio.sleep(0.1)
+    await asyncio.sleep(0.2)    
 
-        if await is_visible_by_path(client.root_window, quitButton):
-            await client.send_key(Keycode.ESC, 0.1)            
+    while await is_visible_by_path(client.root_window, playButton):
+        await click_window_from_path(client.mouse_handler, client.root_window, playButton)
+        await asyncio.sleep(0.1)
+
+    while await client.is_loading():
+        await asyncio.sleep(0.1)
+
+    if await is_visible_by_path(client.root_window, quitButton):
+        await client.send_key(Keycode.ESC, 0.1)            
 
 async def pepperFarmer(client: Client, listPosition):
     try:
@@ -337,40 +328,66 @@ async def pepperFarmer(client: Client, listPosition):
             await client.send_key(Keycode.TAB, 0)
         
         await asyncio.sleep(1.2)
-            
-        if await is_visible_by_path(client.root_window, leftClassRoomButton):
-            await click_window_until_gone(client, leftClassRoomButton)
-                
-        wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(), #then grab the next persons info, and if its in the spot, add it to the list
-                             await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
-                             await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
-                             
-        if await is_visible_by_path(client.root_window, rightClassRoomButton):
-            await click_window_until_gone(client, rightClassRoomButton)                     
-                            
+                           
+        wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+
+        # note: classroom buttons are backwards                   
         while not wizard in [wiz for wiz in activeClients[listPosition].wizLst]:                     
-            if removeTags(wizard.Location) in baseLocationList :
+            if removeTags(wizard.Location) in baseLocationList:
                 activeClients[listPosition].wizLst += [copy.deepcopy(wizard)]
 
             await client.send_key(Keycode.TAB, 0)
             wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
                                 await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
                                 await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+            
+        # get wizards from every classroom
+        while await is_visible_by_path(client.root_window, leftClassRoomButton):
+            await click_window_from_path(client.mouse_handler, client.root_window, leftClassRoomButton)
+
+            wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+
+            while not wizard in [wiz for wiz in activeClients[listPosition].wizLst]:                   
+                if removeTags(wizard.Location) in baseLocationList:
+                    activeClients[listPosition].wizLst += [copy.deepcopy(wizard)]
+
+                await client.send_key(Keycode.TAB, 0)
+                wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+                
+        # go back to first classroom        
+        if await is_visible_by_path(client.root_window, rightClassRoomButton):
+            await click_window_until_gone(client, rightClassRoomButton)    
+            await asyncio.sleep(0.1)  
                                 
         print(f'[{activeClients[listPosition].title}] Is using these wizards:')
         for x in activeClients[listPosition].wizLst:
             print(x)
-        
-        if await is_visible_by_path(client.root_window, leftClassRoomButton): # go to second classroom
-            await click_window_until_gone(client, leftClassRoomButton)
 
-        if removeTags(str(await (await window_from_path(client.root_window, txtLocation)).maybe_text())) in baseLocationList: # if its correct then play
-            await click_window_until_gone(client, playButton)
+        wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
 
-        elif not removeTags(str(await (await window_from_path(client.root_window, txtLocation)).maybe_text())) in baseLocationList: # while not correct
-            if await is_visible_by_path(client.root_window, rightClassRoomButton): # if not correct go back to first classroom
-                await click_window_until_gone(client, rightClassRoomButton)
-            await client.send_key(Keycode.TAB) # switch until correct
+        #switch til correct wizard
+        found = False
+        while not wizard == activeClients[listPosition].wizLst[0]:
+            for i in range(7):
+                await client.send_key(Keycode.TAB, 0)
+                wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+                
+                if wizard == activeClients[listPosition].wizLst[0]:
+                    found = True
+                    break
+
+            if not found:
+                await click_window_from_path(client.mouse_handler, client.root_window, leftClassRoomButton)
 
         if await is_visible_by_path(client.root_window, playButton):
             await click_window_until_gone(client, playButton)
