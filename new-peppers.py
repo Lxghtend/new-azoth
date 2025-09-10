@@ -310,7 +310,7 @@ async def logout_and_in(client: Client, nextWizard, needSwitch, title):
         await asyncio.sleep(0.1)
 
     if await is_visible_by_path(client.root_window, quitButton):
-        await client.send_key(Keycode.ESC, 0.1)            
+        await client.send_key(Keycode.ESC, 0.1)             
 
 async def pepperFarmer(client: Client, listPosition):
     try:

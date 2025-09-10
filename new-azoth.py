@@ -287,14 +287,14 @@ async def logout_and_in(client: Client, nextWizard, needSwitch, title):
                             await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
             except:
                 pass
-            
+
             if wizard == nextWizard:
                 switch = False
+                break
 
-        if needSwitch:
-            await click_window_from_path(client.mouse_handler, leftClassRoomButton)
+        if needSwitch and switch:
+            await click_window_from_path(client.mouse_handler, client.root_window, leftClassRoomButton)
             await asyncio.sleep(0.1)
-                
 
     await asyncio.sleep(0.2)    
 
@@ -306,7 +306,7 @@ async def logout_and_in(client: Client, nextWizard, needSwitch, title):
         await asyncio.sleep(0.1)
 
     if await is_visible_by_path(client.root_window, quitButton):
-        await client.send_key(Keycode.ESC, 0.1)          
+        await client.send_key(Keycode.ESC, 0.1)  
 
 async def azothFarmer(client: Client, listPosition):
     try:
@@ -325,6 +325,10 @@ async def azothFarmer(client: Client, listPosition):
         
         await asyncio.sleep(1.2)
                            
+        wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+
         # note: classroom buttons are backwards                   
         while not wizard in [wiz for wiz in activeClients[listPosition].wizLst]:                     
             if removeTags(wizard.Location) in baseLocationList:
@@ -337,9 +341,13 @@ async def azothFarmer(client: Client, listPosition):
             
         # get wizards from every classroom
         while await is_visible_by_path(client.root_window, leftClassRoomButton):
-            await click_window_from_path(client, leftClassRoomButton)
+            await click_window_from_path(client.mouse_handler, client.root_window, leftClassRoomButton)
 
-            while not wizard in [wiz for wiz in activeClients[listPosition].wizLst]:                     
+            wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+
+            while not wizard in [wiz for wiz in activeClients[listPosition].wizLst]:                   
                 if removeTags(wizard.Location) in baseLocationList:
                     activeClients[listPosition].wizLst += [copy.deepcopy(wizard)]
 
@@ -350,22 +358,32 @@ async def azothFarmer(client: Client, listPosition):
                 
         # go back to first classroom        
         if await is_visible_by_path(client.root_window, rightClassRoomButton):
-            await click_window_until_gone(client, rightClassRoomButton)      
+            await click_window_until_gone(client, rightClassRoomButton)    
+            await asyncio.sleep(0.1)  
                                 
         print(f'[{activeClients[listPosition].title}] Is using these wizards:')
         for x in activeClients[listPosition].wizLst:
             print(x)
-        
+
+        wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+
         #switch til correct wizard
-        while not wizard in [wiz for wiz in activeClients[listPosition].wizLst]:
-            for i in range(6):
+        found = False
+        while not wizard == activeClients[listPosition].wizLst[0]:
+            for i in range(7):
                 await client.send_key(Keycode.TAB, 0)
                 wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
                                 await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
                                 await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
                 
-            await click_window_from_path(client.mouse_handler, leftClassRoomButton)
-            
+                if wizard == activeClients[listPosition].wizLst[0]:
+                    found = True
+                    break
+
+            if not found:
+                await click_window_from_path(client.mouse_handler, client.root_window, leftClassRoomButton)
 
         if await is_visible_by_path(client.root_window, playButton):
             await click_window_until_gone(client, playButton)
