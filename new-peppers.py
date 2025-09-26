@@ -351,14 +351,15 @@ async def pepperFarmer(client: Client, listPosition):
                                 await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
                                 await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
 
-            while not wizard in [wiz for wiz in activeClients[listPosition].wizLst]:                   
-                if removeTags(wizard.Location) in baseLocationList:
-                    activeClients[listPosition].wizLst += [copy.deepcopy(wizard)]
+            for i in range(7):
+                if not wizard in [wiz for wiz in activeClients[listPosition].wizLst]:           
+                    if removeTags(wizard.Location) in baseLocationList:
+                        activeClients[listPosition].wizLst += [copy.deepcopy(wizard)]
 
-                await client.send_key(Keycode.TAB, 0)
-                wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
-                                await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
-                                await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
+                    await client.send_key(Keycode.TAB, 0)
+                    wizard  = wizardInfo(await (await window_from_path(client.root_window, txtName)).maybe_text(),
+                                    await (await window_from_path(client.root_window, txtLevel)).maybe_text(),
+                                    await (await window_from_path(client.root_window, txtLocation)).maybe_text(),0,0,0)
                 
         # go back to first classroom        
         if await is_visible_by_path(client.root_window, rightClassRoomButton):
